@@ -15,7 +15,7 @@ public class Movement2D : MonoBehaviour
         transform.position += moveDirection * moveSpeed * Time.deltaTime;
     }
 
-    public void MoveTO(Vector3 direction)
+    public void MoveTo(Vector3 direction)
     {
         moveDirection = direction;
     }

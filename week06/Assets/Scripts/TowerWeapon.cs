@@ -16,7 +16,7 @@ public class TowerWeapon : MonoBehaviour
 
 	private	EnemySpawner enemySpawner;			// 게임에 존재하는 적 정보 획득용
 	private	Transform attackTarget = null;	// 공격 대상
-	private	WeaponState	weaponState;			// 타워 무기의 상태
+	private	WeaponState weaponState;			// 타워 무기의 상태
 
 	public void Setup(EnemySpawner enemySpawner)
 	{
@@ -71,8 +71,8 @@ public class TowerWeapon : MonoBehaviour
 				// 현재 검사중인 적과의 거리가 공격 범위 내에 있고, 현재까지 검사한 적보다 거리가 가까우면
 				if ( distance <= attackRange && distance <= closestDistSqr )
 				{
-					closestDistSqr = distance;
-					attackTarget = enemySpawner.EnemyList[i].transform;
+					closestDistSqr	= distance;
+					attackTarget	= enemySpawner.EnemyList[i].transform;
 				}
 			}
 
@@ -112,7 +112,9 @@ public class TowerWeapon : MonoBehaviour
 
 	private void SpawnProjectile()
 	{
-		Instantiate(projectilePrefab, spawnPoint.position, Quaternion.identity);
+		var clone = Instantiate(projectilePrefab, spawnPoint.position, Quaternion.identity);
+		// 생성된 발사체에게 공격 대상(attackTarget) 전달
+		clone.GetComponent<Projectile>().Setup(attackTarget);
 	}
 }
 

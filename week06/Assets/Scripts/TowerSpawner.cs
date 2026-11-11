@@ -17,7 +17,7 @@ public class TowerSpawner : MonoBehaviour
         {
             return;
         }
-        // 타워가 건설되어 있음으로 설정
+		// 타워가 건설되어 있음으로 설정
 		tile.IsbuildTower = true;
 		// 선택한 타일의 위치에 타워 건설
 		var clone = Instantiate(towerPrefab, tileTransform.position, Quaternion.identity);
