@@ -4,7 +4,7 @@ using System.Collections;
 
 public class UIScreanRed : MonoBehaviour
 {
-	private	Image	imageScreen;    
+	private	Image imageScreen;    
 
 	private void Awake()
 	{
@@ -19,7 +19,6 @@ public class UIScreanRed : MonoBehaviour
 
 	private IEnumerator Process()
 	{
-		
 		Color color = imageScreen.color;
 		color.a = 0.4f;
 		imageScreen.color = color;
