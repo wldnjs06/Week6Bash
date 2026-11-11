@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5564467907797825941}
   - component: {fileID: 327668792078848496}
   - component: {fileID: -6137326735186010905}
+  - component: {fileID: 6619876031298979033}
   m_Layer: 0
   m_Name: Tile_Wall
   m_TagString: Tile
@@ -113,3 +114,15 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6619876031298979033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7277262769556910118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82b15aa08dc3c44ea41bcadf826789c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tile

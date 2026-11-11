@@ -1,0 +1,23 @@
+using UnityEngine;
+
+public class Movement2D : MonoBehaviour
+{
+    [SerializeField]
+    private float moveSpeed = 0.0f;
+    [SerializeField]
+    private Vector3 moveDirection = Vector3.zero;
+
+    //moveSpeed 변수의 프로퍼티 (Get 가능)
+    public float MoveSpeed => moveSpeed;
+
+    private void Update() 
+    {
+        transform.position += moveDirection * moveSpeed * Time.deltaTime;
+    }
+
+    public void MoveTO(Vector3 direction)
+    {
+        moveDirection = direction;
+    }
+
+}
