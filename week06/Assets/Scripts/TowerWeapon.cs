@@ -6,29 +6,32 @@ public enum WeaponState { SearchClosestTarget = 0, AttackToTarget }
 public class TowerWeapon : MonoBehaviour
 {
 	[SerializeField]
+	private	TowerTemplateSO	towerTemplate; // 타워 정보
+	[SerializeField]
 	private	Transform spawnPoint;				// 발사체 생성 위치
 	[SerializeField]
 	private	GameObject projectilePrefab;		// 발사체 프리팹
-	[SerializeField]
-	private	float attackRate = 0.5f;		// 공격 속도
-	[SerializeField]
-	private	float attackRange = 2.0f;	// 공격 범위
-	[SerializeField]
-	private	int	attackDamage = 1;	//공격력
-
 	private	EnemySpawner enemySpawner;			// 게임에 존재하는 적 정보 획득용
+	private	SpriteRenderer	spriteRenderer;	
+	private	PlayerGold playerGold;	
 	private	Transform attackTarget = null;	// 공격 대상
+	private	Tile ownerTile;	
 	private	WeaponState weaponState;			// 타워 무기의 상태
 	private	int level;
 
-	public float Damage => attackDamage;
-	public float Rate => attackRate;
-	public float Range => attackRange;
+	public Sprite TowerSprite => towerTemplate.weapon[level].sprite;
+	public float Damage => towerTemplate.weapon[level].damage;
+	public float Rate => towerTemplate.weapon[level].rate;
+	public float Range => towerTemplate.weapon[level].range;
 	public int Level => level + 1;
+	public int MaxLevel => towerTemplate.weapon.Length;
 
-	public void Setup(EnemySpawner enemySpawner)
+	public void Setup(EnemySpawner enemySpawner, PlayerGold playerGold, Tile ownerTile)
 	{
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		this.enemySpawner = enemySpawner;
+		this.playerGold	= playerGold;
+		this.ownerTile	= ownerTile;
 		
 		// 첫 상태는 목표를 탐색하는 SearchClosestTarget으로 설정
 		ChangeState(WeaponState.SearchClosestTarget);
@@ -77,7 +80,7 @@ public class TowerWeapon : MonoBehaviour
 			{
 				float distance = Vector3.Distance(enemySpawner.EnemyList[i].transform.position, transform.position);
 				// 현재 검사중인 적과의 거리가 공격 범위 내에 있고, 현재까지 검사한 적보다 거리가 가까우면
-				if ( distance <= attackRange && distance <= closestDistSqr )
+				if ( distance <= towerTemplate.weapon[level].range && distance <= closestDistSqr )
 				{
 					closestDistSqr	= distance;
 					attackTarget	= enemySpawner.EnemyList[i].transform;
@@ -103,7 +106,7 @@ public class TowerWeapon : MonoBehaviour
 
 			// 2. target이 공격 밤위 안에 있는지 검사 (공격 범위를 벗어나면 새로운 적 탐색)
 			float distance = Vector3.Distance(attackTarget.position, transform.position);
-			if ( distance > attackRange )
+			if ( distance > towerTemplate.weapon[level].range )
 			{
 				attackTarget = null;
 				ChangeState(WeaponState.SearchClosestTarget);
@@ -111,7 +114,7 @@ public class TowerWeapon : MonoBehaviour
 			}
 
 			// 3. attackRate 시간만큼 대기
-			yield return new WaitForSeconds(attackRate);
+			yield return new WaitForSeconds(towerTemplate.weapon[level].rate);
 
 			// 4. 공격 (발사체 생성)
 			SpawnProjectile();
@@ -122,7 +125,31 @@ public class TowerWeapon : MonoBehaviour
 	{
 		var clone = Instantiate(projectilePrefab, spawnPoint.position, Quaternion.identity);
 		// 생성된 발사체에게 공격 대상(attackTarget) 전달
-		clone.GetComponent<Projectile>().Setup(attackTarget, attackDamage);
+		clone.GetComponent<Projectile>().Setup(attackTarget,  towerTemplate.weapon[level].damage);
+	}
+	public bool Upgrade()
+	{
+		if ( playerGold.CurrentGold < towerTemplate.weapon[level+1].cost )
+		{
+			return false;
+		}
+
+		level ++;
+
+		spriteRenderer.sprite = TowerSprite;
+
+		playerGold.CurrentGold -= towerTemplate.weapon[level].cost;
+
+		return true;
+	}
+
+		public void Sell()
+	{
+		playerGold.CurrentGold += towerTemplate.weapon[level].sell;
+		
+		ownerTile.IsbuildTower = false;
+
+		Destroy(gameObject);
 	}
 }
 

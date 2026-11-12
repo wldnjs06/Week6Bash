@@ -3,35 +3,41 @@ using UnityEngine;
 public class TowerSpawner : MonoBehaviour
 {
     [SerializeField]
-    private GameObject towerPrefab;
-    [SerializeField]
-	private	int	towerBuildGold = 50;
+	private	TowerTemplateSO towerTemplate;	
     [SerializeField]
 	private	EnemySpawner enemySpawner;	// 현재 맵에 존재하는 적 리스트 정보를 얻기 위해
 
     [SerializeField]
 	private	PlayerGold playerGold;
+    [SerializeField]
+	private	SystemTextViewer systemTextViewer;
 
     public void TrySpawnTower(Transform tileTransform)
     {
-        if ( towerBuildGold > playerGold.CurrentGold ) return;
-        Tile tile = tileTransform.GetComponent<Tile>();
-
         //타워 건설 가능 여부 확인
-        //1. 현재 타일의 위치에 이미 타워가 건설되어 있으면 타워 건설 X
-        if (tile.IsbuildTower == true)
+        //1. 골드가 부족하면 타워 건설 불가능 할 때 출력
+        if (towerTemplate.weapon[0].cost > playerGold.CurrentGold)
         {
+            systemTextViewer.PrintText(MESSAGE.MONEY);
             return;
         }
 		// 타워가 건설되어 있음으로 설정
+		Tile tile = tileTransform.GetComponent<Tile>();
+
+
+        if ( tile.IsbuildTower == true )
+		{	
+			systemTextViewer.PrintText(MESSAGE.BUILD);
+			return;
+		}
+
 		tile.IsbuildTower = true;
-        playerGold.CurrentGold -= towerBuildGold;
 
-        Vector3 position = tileTransform.position + Vector3.back;
+		playerGold.CurrentGold -= towerTemplate.weapon[0].cost;
 
-		// 선택한 타일의 위치에 타워 건설
-		var clone = Instantiate(towerPrefab, tileTransform.position, Quaternion.identity);
-		/// 타워 무기에 enemySpawner 정보 전달
-		clone.GetComponent<TowerWeapon>().Setup(enemySpawner);
+		Vector3 position = tileTransform.position + Vector3.back;
+		var clone = Instantiate(towerTemplate.towerPrefab, position, Quaternion.identity);
+
+		clone.GetComponent<TowerWeapon>().Setup(enemySpawner, playerGold, tile);
     }
 }
