@@ -26,6 +26,9 @@ public class TowerSpawner : MonoBehaviour
 		// 타워가 건설되어 있음으로 설정
 		tile.IsbuildTower = true;
         playerGold.CurrentGold -= towerBuildGold;
+
+        Vector3 position = tileTransform.position + Vector3.back;
+
 		// 선택한 타일의 위치에 타워 건설
 		var clone = Instantiate(towerPrefab, tileTransform.position, Quaternion.identity);
 		/// 타워 무기에 enemySpawner 정보 전달
